@@ -1,0 +1,42 @@
+<div class="example-container" *ngFor="let status of board.statuses">
+  <h2>{{status.title}}</h2>
+
+  <div
+    cdkDropList
+    [id]="status.id.toString()"
+    [cdkDropListData]="status.tasks"
+    [cdkDropListConnectedTo]="listConnectTo()"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let task of status.tasks" cdkDrag>{{task.title}}</div>
+  </div>
+</div>
+
+
+<!--<div class="example-container">-->
+<!--  <h2>Done</h2>-->
+
+<!--  <div-->
+<!--    cdkDropList-->
+<!--    #doneList="cdkDropList"-->
+<!--    [cdkDropListData]="done"-->
+<!--    [cdkDropListConnectedTo]="[todoList, doneList2]"-->
+<!--    class="example-list"-->
+<!--    (cdkDropListDropped)="drop($event)">-->
+<!--    <div class="example-box" *ngFor="let item of done.data" cdkDrag>{{item}}</div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<div class="example-container">-->
+<!--  <h2>Done2</h2>-->
+
+<!--  <div-->
+<!--    cdkDropList-->
+<!--    #doneList2="cdkDropList"-->
+<!--    [cdkDropListData]="done2"-->
+<!--    [cdkDropListConnectedTo]="[todoList, doneList]"-->
+<!--    class="example-list"-->
+<!--    (cdkDropListDropped)="drop($event)">-->
+<!--    <div class="example-box" *ngFor="let item of done2.data" cdkDrag>{{item}}</div>-->
+<!--  </div>-->
+<!--</div>-->
+
