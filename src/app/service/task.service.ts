@@ -14,4 +14,8 @@ export class TaskService {
   sortTask(id: number, task: Task): Observable<Task> {
     return this.http.put<Task>(API_URL + `/${id}`, task);
   }
+
+  addNew(task: Task): Observable<Task> {
+    return this.http.post<Task>(API_URL, task);
+  }
 }

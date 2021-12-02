@@ -5,4 +5,7 @@ export interface Status {
   title?: string;
   position?: number;
   tasks?: Task[];
+  board?: {
+    id: number;
+  };
 }

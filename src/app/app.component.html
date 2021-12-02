@@ -1,42 +1,76 @@
-<div class="example-container" *ngFor="let status of board.statuses">
-  <h2>{{status.title}}</h2>
 
-  <div
-    cdkDropList
-    [id]="status.id.toString()"
-    [cdkDropListData]="status.tasks"
-    [cdkDropListConnectedTo]="listConnectTo()"
-    class="example-list"
-    (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let task of status.tasks" cdkDrag>{{task.title}}</div>
+
+<div cdkDropList cdkDropListOrientation="horizontal"  (cdkDropListDropped)="dropStatus($event)">
+  <div class="example-container border border-dark" cdkDrag *ngFor="let status of board.statuses">
+    <div class="row text-center">
+      <h2>{{status.title}}</h2>
+    </div>
+    <div
+      cdkDropList
+      [id]="status.id.toString()"
+      [cdkDropListData]="status.tasks"
+      [cdkDropListConnectedTo]="listConnectTo()"
+      class="example-list"
+      (cdkDropListDropped)="dropTask($event)">
+      <div class="example-box" *ngFor="let task of status.tasks" cdkDrag>
+        <div>{{task.id}}</div><div>{{task.title}}</div>
+      </div>
+      <div class="example-box row" [hidden]="this.statusId != status.id || !isShowAddBox">
+        <div class="row">
+          <form [formGroup]="newTask" (ngSubmit)="addNewTask()" >
+            <div class="row" style="height: 150px; padding: 20px" >
+                <input type="text" formControlName="title" style="width: 100%; height: 100%">
+            </div>
+            <div class="row float-end" >
+              <div>
+                <button type="submit" class="btn btn-primary" style="width: 50px ;height: 50px" (click)="showAddBox()">Add</button>
+                <button type="button" class="btn btn-danger" style="width: 50px ;height: 50px" (click)="showAddBox()">x</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+    <div class="float-end"><button class="btn btn-primary float-end "
+                                   style="margin-right: 30px;"
+                 (click)="setStatusId(status.id)">{{(isShowAddBox && status.id == this.statusId) ? '-' : '+'}}
+    </button>
+    </div>
   </div>
+<!--  <div class="example-box" *ngFor="let timePeriod of timePeriods" cdkDrag>{{timePeriod}}</div>-->
 </div>
 
+<!-- Modal -->
+<!--<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--  <div class="modal-dialog">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 class="modal-title" id="exampleModalLabel">Task Information</h5>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--      </div>-->
 
-<!--<div class="example-container">-->
-<!--  <h2>Done</h2>-->
-
-<!--  <div-->
-<!--    cdkDropList-->
-<!--    #doneList="cdkDropList"-->
-<!--    [cdkDropListData]="done"-->
-<!--    [cdkDropListConnectedTo]="[todoList, doneList2]"-->
-<!--    class="example-list"-->
-<!--    (cdkDropListDropped)="drop($event)">-->
-<!--    <div class="example-box" *ngFor="let item of done.data" cdkDrag>{{item}}</div>-->
+<!--      <div class="modal-body">-->
+<!--       <table>-->
+<!--         <tr>-->
+<!--           <td>Title: </td>-->
+<!--           <td><input type="text" formControlName="title"></td>-->
+<!--         </tr>-->
+<!--         <tr>-->
+<!--           <td>Description: </td>-->
+<!--           <td><input type="text" formControlName="description"></td>-->
+<!--         </tr>-->
+<!--         <tr>-->
+<!--           <td>Deadline: </td>-->
+<!--           <td><input type="text" formControlName="deadline"></td>-->
+<!--         </tr>-->
+<!--       </table>-->
+<!--      </div>-->
+<!--      <div class="modal-footer">-->
+<!--        <button type="submit" class="btn btn-primary">Save</button>-->
+<!--        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--      </div>-->
+<!--    </div>-->
 <!--  </div>-->
 <!--</div>-->
-<!--<div class="example-container">-->
-<!--  <h2>Done2</h2>-->
-
-<!--  <div-->
-<!--    cdkDropList-->
-<!--    #doneList2="cdkDropList"-->
-<!--    [cdkDropListData]="done2"-->
-<!--    [cdkDropListConnectedTo]="[todoList, doneList]"-->
-<!--    class="example-list"-->
-<!--    (cdkDropListDropped)="drop($event)">-->
-<!--    <div class="example-box" *ngFor="let item of done2.data" cdkDrag>{{item}}</div>-->
-<!--  </div>-->
-<!--</div>-->
-
