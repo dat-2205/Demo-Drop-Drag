@@ -18,4 +18,8 @@ export class TaskService {
   addNew(task: Task): Observable<Task> {
     return this.http.post<Task>(API_URL, task);
   }
+
+  findById(id: number): Observable<Task> {
+    return this.http.get<Task>(API_URL + `/${id}`);
+  }
 }

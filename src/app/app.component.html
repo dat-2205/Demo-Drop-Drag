@@ -12,7 +12,8 @@
       [cdkDropListConnectedTo]="listConnectTo()"
       class="example-list"
       (cdkDropListDropped)="dropTask($event)">
-      <div class="example-box" *ngFor="let task of status.tasks" cdkDrag>
+      <div class="example-box" *ngFor="let task of status.tasks" cdkDrag
+           data-bs-toggle="modal" data-bs-target="#taskDetail" (click)="showTaskDetail(task.id)">
         <div>{{task.id}}</div><div>{{task.title}}</div>
       </div>
       <div class="example-box row" [hidden]="this.statusId != status.id || !isShowAddBox">
@@ -39,38 +40,51 @@
     </button>
     </div>
   </div>
-<!--  <div class="example-box" *ngFor="let timePeriod of timePeriods" cdkDrag>{{timePeriod}}</div>-->
 </div>
 
-<!-- Modal -->
-<!--<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
-<!--  <div class="modal-dialog">-->
-<!--    <div class="modal-content">-->
-<!--      <div class="modal-header">-->
-<!--        <h5 class="modal-title" id="exampleModalLabel">Task Information</h5>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--      </div>-->
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskDetail">
+  Launch demo modal
+</button>
 
-<!--      <div class="modal-body">-->
-<!--       <table>-->
-<!--         <tr>-->
-<!--           <td>Title: </td>-->
-<!--           <td><input type="text" formControlName="title"></td>-->
-<!--         </tr>-->
-<!--         <tr>-->
-<!--           <td>Description: </td>-->
-<!--           <td><input type="text" formControlName="description"></td>-->
-<!--         </tr>-->
-<!--         <tr>-->
-<!--           <td>Deadline: </td>-->
-<!--           <td><input type="text" formControlName="deadline"></td>-->
-<!--         </tr>-->
-<!--       </table>-->
-<!--      </div>-->
-<!--      <div class="modal-footer">-->
-<!--        <button type="submit" class="btn btn-primary">Save</button>-->
-<!--        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
+<!-- Modal -->
+<div class="modal fade" id="taskDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table-bordered table-striped">
+          <tr>
+<!--            <td>Title </td>-->
+<!--            <td>-->
+<!--              <p [hidden]="false" #taskDetailTitle (click)="taskDetailTitle.hidden = true && taskDetailTitleInput.hidden = false">{{taskDetail.title}}</p>-->
+<!--              <input type="text" [hidden]="true" #taskDetailTitleInput [value]="taskDetail.title" >-->
+<!--            </td>-->
+            <td>Title </td>
+            <td>
+              <p [hidden]="false"  (click)="showCC()">{{taskDetail.title}}</p>
+              <input type="text" [hidden]="true" #taskDetailTitleInput [value]="taskDetail.title" >
+            </td>
+          </tr>
+          <tr>
+            <td>Description </td>
+            <td>{{taskDetail.description}}</td>
+          </tr>
+          <tr>
+            <td>Deadline </td>
+            <td>{{taskDetail.deadline}}</td>
+          </tr>
+          <tr *ngFor="let label of taskDetail.labels"><p [ngStyle]="{'color': label.color.name}">{{label.content}}</p></tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+

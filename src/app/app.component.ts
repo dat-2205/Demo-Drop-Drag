@@ -9,6 +9,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {Status} from './model/status';
 import {StatusService} from './service/status.service';
 
+
 declare var Swal: any;
 
 @Component({
@@ -18,11 +19,13 @@ declare var Swal: any;
 })
 export class AppComponent {
   board: Board;
+  role: string;
   newTask: FormGroup =  new FormGroup({
     title: new FormControl(),
     position: new FormControl(99999),
     status:  new FormControl(),
   });
+  taskDetail: Task = {};
   statusId: number;
   isShowAddBox: boolean = false;
   constructor(private boardService: BoardService,
@@ -61,10 +64,15 @@ export class AppComponent {
     console.log(this.board.id);
     console.log(this.board.statuses);
     for (let i = 0; i < this.board.statuses.length; i++) {
-      const status = this.board.statuses[i];
-      status.position = i;
-      status.board.id = this.board.id;
-      this.moveStatus(status.id, status);
+     const statusMove = {
+        id: this.board.statuses[i].id,
+        title: this.board.statuses[i].title,
+        position: i,
+        board: {
+          id: this.board.id,
+        }
+      };
+     this.moveStatus(statusMove.id, statusMove);
     }
   }
 
@@ -143,5 +151,18 @@ export class AppComponent {
       icon: 'success',
       title: 'Signed in successfully'
     });
+  }
+
+  showTaskDetail(id: number) {
+      this.taskService.findById(id).subscribe(data => {this.taskDetail = data}, error => { console.log('khong lay duoc detail'); });
+  }
+
+  check() {
+    console.log(this.role);
+  }
+
+
+  showCC() {
+
   }
 }
