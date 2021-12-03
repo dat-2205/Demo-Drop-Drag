@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatAutocompleteModule} from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
         HttpClientModule,
         ReactiveFormsModule,
         FormsModule,
+        MatAutocompleteModule,
     ],
   providers: [],
   bootstrap: [AppComponent]

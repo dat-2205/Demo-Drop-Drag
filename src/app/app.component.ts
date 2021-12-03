@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {HttpClient} from '@angular/common/http';
 import {Board} from './model/board';
 import {BoardService} from './service/board.service';
 import { Task } from './model/task';
@@ -8,9 +7,12 @@ import {TaskService} from './service/task.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Status} from './model/status';
 import {StatusService} from './service/status.service';
+import {NotificationService} from './service/notification.service';
+import {successAlert} from './notification';
 
 
-declare var Swal: any;
+
+declare var $: any;
 
 @Component({
   selector: 'app-root',
@@ -19,18 +21,27 @@ declare var Swal: any;
 })
 export class AppComponent {
   board: Board;
-  role: string;
   newTask: FormGroup =  new FormGroup({
     title: new FormControl(),
     position: new FormControl(99999),
     status:  new FormControl(),
   });
+  newStatus: FormGroup = new FormGroup({
+    title: new FormControl(),
+    position: new FormControl(99999),
+    board: new FormControl(),
+  });
   taskDetail: Task = {};
   statusId: number;
-  isShowAddBox: boolean = false;
+  statusEditId: number;
+  isShowTaskAddBox: boolean = false;
+  isShowTitleInput: boolean = false;
+  isShowDescriptionInput: boolean = false;
+  isShowDeadlineInput: boolean = false;
+  isShowAddStatusBox: boolean = false;
   constructor(private boardService: BoardService,
               private taskService: TaskService,
-              private statusService: StatusService) {
+              private statusService: StatusService,) {
     this.getBoard();
   }
 
@@ -111,7 +122,7 @@ export class AppComponent {
   }
 
   private moveStatus(id: number, status: Status) {
-    this.statusService.moveStatus(id, status).subscribe( data => {
+    this.statusService.editStatus(id, status).subscribe(data => {
       console.log(data.position);
     });
   }
@@ -123,46 +134,80 @@ export class AppComponent {
   addNewTask() {
       this.newTask.get('status').setValue({id: this.statusId});
       this.taskService.addNew(this.newTask.value).subscribe(data => {console.log(data); this.getBoard(); });
-      this.successAlert();
+      this.newTask = new FormGroup({
+        title: new FormControl(),
+        position: new FormControl(99999),
+        status:  new FormControl(),
+      });
+      successAlert();
   }
 
   setStatusId(id: number) {
     this.statusId  = id;
-    this.showAddBox();
+    this.showTaskAddBox();
   }
 
-  showAddBox() {
-    this.isShowAddBox = !this.isShowAddBox;
+  showTaskAddBox() {
+    this.isShowTaskAddBox = !this.isShowTaskAddBox;
   }
-  successAlert() {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      }
-    });
 
-    Toast.fire({
-      icon: 'success',
-      title: 'Signed in successfully'
-    });
-  }
+
 
   showTaskDetail(id: number) {
-      this.taskService.findById(id).subscribe(data => {this.taskDetail = data}, error => { console.log('khong lay duoc detail'); });
+      this.taskService.findById(id).subscribe(data => {this.taskDetail = data; }, error => { console.log('khong lay duoc detail'); });
   }
 
-  check() {
-    console.log(this.role);
+  showTitleEdit() {
+      this.isShowTitleInput = !this.isShowTitleInput;
   }
 
+  showDescriptionEdit() {
+    this.isShowDescriptionInput = !this.isShowDescriptionInput;
+  }
+  showDeadlineEdit() {
+    this.isShowDeadlineInput = !this.isShowDeadlineInput;
+  }
 
-  showCC() {
+  showAddStatusForm() {
+    this.isShowAddStatusBox = !this.isShowAddStatusBox;
+  }
 
+  editTaskDetail() {
+    this.taskService.editTask(this.taskDetail.id, this.taskDetail).subscribe(data => {console.log(data); this.getBoard(); });
+  }
+
+  addNewStatus() {
+    this.newStatus.get('board').setValue({id: this.board.id});
+    this.statusService.addNewStatus(this.newStatus.value).subscribe(data => {console.log(data); this.getBoard(); });
+  }
+
+  deleteTask() {
+    this.taskService.deleteTask(this.taskDetail.id).subscribe(() => this.getBoard() );
+    this.taskDetail = {};
+  }
+
+  showEditTitleStatus(id: number) {
+    this.statusEditId = id;
+  }
+
+  isShowEditTitle(id: number) {
+    return this.statusEditId !== id;
+  }
+
+  saveEditStatus(i: number) {
+    const newTitle = $(`#titleStatus${this.statusEditId}`).val();
+    const status = {
+      id: this.board.statuses[i].id,
+      title: newTitle,
+      position: this.board.statuses[i].position,
+      board: {
+        id: this.board.id,
+      }
+    };
+    this.statusService.editStatus(status.id, status).subscribe(data => {console.log(data); this.getBoard(); this.statusEditId = -1; });
+  }
+
+  deleteStatus(id: number) {
+    this.statusService.deleteStatus(id).subscribe(() => this.getBoard() );
   }
 }
