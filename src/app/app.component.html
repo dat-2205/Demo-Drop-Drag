@@ -1,5 +1,19 @@
 
 <div cdkDropList cdkDropListOrientation="horizontal"  (cdkDropListDropped)="dropStatus($event)" >
+  <div class="example-container border border-dark">
+    <div class="row text-center row">
+      <div style="width: 80%;">
+        <h2>Labels</h2>
+      </div>
+      <div style="width: 20%;">
+      </div>
+    </div>
+    <div class="example-list" >
+      <div class="example-box row justify-content-center"  *ngFor="let label of labels"  [ngStyle]="{'background-color': label.color.name}"  >
+      <div>{{label.content}}</div>
+      </div>
+    </div>
+  </div>
   <div class="example-container border border-dark" cdkDrag *ngFor="let status of board.statuses, let i = index">
     <div class="row text-center row">
       <div style="width: 80%;">
@@ -31,14 +45,15 @@
       [cdkDropListData]="status.tasks"
       [cdkDropListConnectedTo]="listConnectTo()"
       class="example-list"
-      (cdkDropListDropped)="dropTask($event)">
-      <div class="example-box" *ngFor="let task of status.tasks" cdkDrag
+      (cdkDropListDropped)="dropTask($event)"
+      [hidden]="!(status.tasks.length > 0 || isShowTaskAddBox && status.id == this.statusId)">
+      <div class="example-box"  *ngFor="let task of status.tasks" cdkDrag
            data-bs-toggle="modal" data-bs-target="#taskDetail" (click)="showTaskDetail(task.id)">
         <div>{{task.id}}</div><div>{{task.title}}</div>
       </div>
       <div class="example-box row" [hidden]="this.statusId != status.id || !isShowTaskAddBox">
         <div class="row">
-          <form [formGroup]="newTask" (ngSubmit)="addNewTask()" >
+          <form [formGroup]="newTask" (ngSubmit)="addNewTask(i)" >
             <div class="row" style="height: 150px; padding: 20px" >
               <input type="text" formControlName="title" style="width: 100%; height: 100%">
             </div>
@@ -54,6 +69,8 @@
 
       </div>
     </div>
+
+
     <div class="float-end">
       <button class="btn btn-primary float-end "
               style="margin-right: 30px;"

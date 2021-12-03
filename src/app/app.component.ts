@@ -7,8 +7,10 @@ import {TaskService} from './service/task.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Status} from './model/status';
 import {StatusService} from './service/status.service';
-import {NotificationService} from './service/notification.service';
+
 import {successAlert} from './notification';
+import {Label} from './model/label';
+import {LabelService} from './service/label.service';
 
 
 
@@ -21,14 +23,15 @@ declare var $: any;
 })
 export class AppComponent {
   board: Board;
+  labels: Label[];
   newTask: FormGroup =  new FormGroup({
     title: new FormControl(),
-    position: new FormControl(99999),
+    position: new FormControl(),
     status:  new FormControl(),
   });
   newStatus: FormGroup = new FormGroup({
     title: new FormControl(),
-    position: new FormControl(99999),
+    position: new FormControl(),
     board: new FormControl(),
   });
   taskDetail: Task = {};
@@ -41,16 +44,23 @@ export class AppComponent {
   isShowAddStatusBox: boolean = false;
   constructor(private boardService: BoardService,
               private taskService: TaskService,
-              private statusService: StatusService,) {
+              private statusService: StatusService,
+              private labelService: LabelService) {
     this.getBoard();
   }
 
   private getBoard() {
     this.boardService.getBoardById(1).subscribe(data => {
       this.board = data;
-      console.log(this.board);
+      this.getLabels();
     }, error => {
       console.log('Error');
+    });
+  }
+
+  private getLabels() {
+    this.labelService.getAllLabelByBoardId(this.board.id).subscribe(labels => {
+      this.labels = labels;
     });
   }
 
@@ -131,14 +141,16 @@ export class AppComponent {
       return this.board.statuses.map(status => status.id.toString());
   }
 
-  addNewTask() {
+  addNewTask(i: number) {
       this.newTask.get('status').setValue({id: this.statusId});
+      this.newTask.get('position').setValue(this.board.statuses[i].tasks.length);
       this.taskService.addNew(this.newTask.value).subscribe(data => {console.log(data); this.getBoard(); });
       this.newTask = new FormGroup({
         title: new FormControl(),
         position: new FormControl(99999),
         status:  new FormControl(),
       });
+      this.getBoard();
       successAlert();
   }
 
@@ -178,7 +190,15 @@ export class AppComponent {
 
   addNewStatus() {
     this.newStatus.get('board').setValue({id: this.board.id});
+    this.newStatus.get('position').setValue(this.board.statuses.length);
     this.statusService.addNewStatus(this.newStatus.value).subscribe(data => {console.log(data); this.getBoard(); });
+    this.newStatus = new FormGroup({
+      title: new FormControl(),
+      position: new FormControl(this.board.statuses.length),
+      board: new FormControl(),
+    });
+    this.getBoard();
+    successAlert()
   }
 
   deleteTask() {
