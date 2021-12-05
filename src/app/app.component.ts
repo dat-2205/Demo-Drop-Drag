@@ -8,9 +8,11 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {Status} from './model/status';
 import {StatusService} from './service/status.service';
 
-import {successAlert} from './notification';
+import {editSuccessAlert, successAlert} from './notification';
 import {Label} from './model/label';
 import {LabelService} from './service/label.service';
+import {ColorService} from './service/color.service';
+import {Color} from './model/color';
 
 
 
@@ -24,6 +26,7 @@ declare var $: any;
 export class AppComponent {
   board: Board;
   labels: Label[];
+  colors: Color[];
   newTask: FormGroup =  new FormGroup({
     title: new FormControl(),
     position: new FormControl(),
@@ -32,6 +35,12 @@ export class AppComponent {
   newStatus: FormGroup = new FormGroup({
     title: new FormControl(),
     position: new FormControl(),
+    board: new FormControl(),
+  });
+  newLabel: FormGroup = new FormGroup({
+    id: new FormControl(),
+    content: new FormControl(),
+    color: new FormControl(),
     board: new FormControl(),
   });
   taskDetail: Task = {};
@@ -45,8 +54,10 @@ export class AppComponent {
   constructor(private boardService: BoardService,
               private taskService: TaskService,
               private statusService: StatusService,
-              private labelService: LabelService) {
+              private labelService: LabelService,
+              private colorService: ColorService) {
     this.getBoard();
+    this.colorService.getAll().subscribe(data => {this.colors = data; });
   }
 
   private getBoard() {
@@ -198,7 +209,55 @@ export class AppComponent {
       board: new FormControl(),
     });
     this.getBoard();
-    successAlert()
+    successAlert();
+  }
+
+  addNewLabel() {
+    this.newLabel.get('board').setValue({id : this.board.id});
+    this.newLabel.get('color').setValue({id : this.newLabel.get('color').value});
+    this.labelService.addNewLabel(this.newLabel.value).subscribe(data => {
+      successAlert();
+      this.getLabels();
+      this.newLabel = new FormGroup({
+                            id: new FormControl(),
+                            content: new FormControl(),
+                            color: new FormControl(),
+                            board: new FormControl(),
+                          });
+    });
+  }
+
+  showLabelDetail(id: number) {
+    this.labelService.getById(id).subscribe( data => {
+      this.newLabel = new FormGroup({
+        id: new FormControl(data.id),
+        content: new FormControl(data.content),
+        color: new FormControl(data.color.id),
+        board: new FormControl({id: this.board.id}),
+      });
+    });
+  }
+
+  editLabel() {
+    this.newLabel.get('board').setValue({id : this.board.id});
+    this.newLabel.get('color').setValue({id : this.newLabel.get('color').value});
+    this.labelService.addNewLabel(this.newLabel.value).subscribe(data => {
+      editSuccessAlert();
+      this.getLabels();
+      this.newLabel = new FormGroup({
+        id: new FormControl(),
+        content: new FormControl(),
+        color: new FormControl(),
+        board: new FormControl(),
+      });
+    });
+  }
+
+  deleteLabel() {
+    this.labelService.deleteLabel(this.newLabel.get('id').value).subscribe(() => {
+      this.getLabels();
+      successAlert();
+    });
   }
 
   deleteTask() {

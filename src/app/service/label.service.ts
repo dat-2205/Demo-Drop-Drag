@@ -27,4 +27,8 @@ export class LabelService {
   editLabel(id: number, label: Label): Observable<Label> {
     return this.http.put<Label>(API_URL + `/${id}`, label);
   }
+
+  getById(id: number): Observable<Label> {
+    return this.http.get<Label>(API_URL + `/find/${id}`);
+  }
 }
